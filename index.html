@@ -33,18 +33,16 @@
             align-items: center;
             padding: 0 10px;
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
-            z-index: 100; /* スタートアイコンを最前面に表示 */
         }
 
         #start-button {
-            width: 32px;
-            height: 32px;
+            width: 48px; /* サイズを変更しました */
+            height: 48px; /* サイズを変更しました */
             background: url('https://files.oaiusercontent.com/file-Gg5XCO5z3vje8ylVMizUHxDB?se=2024-09-11T02%3A47%3A42Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4dc28aef-55a1-4c34-84eb-157d800b8136.webp&sig=CaitDRjuuBwWzEStcCJVAPIzalvVphtGhQ%2Bw6G%2BVRh4%3D') no-repeat center center;
             background-size: cover;
             border: none;
             cursor: pointer;
             margin-right: 10px;
-            z-index: 101; /* スタートアイコンを最前面に表示 */
         }
 
         #start-menu {
@@ -126,6 +124,7 @@
             padding: 5px;
             border-bottom: 1px solid #1c5a85;
             border-radius: 5px 5px 0 0;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
 
         .title-bar .title {
@@ -139,36 +138,40 @@
             color: white;
             cursor: pointer;
             padding: 5px;
+            border-radius: 3px;
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
         }
 
         .title-bar .button-group {
             display: flex;
-            gap: 0; /* 隣のボタンとつなぐ */
+            gap: 0;
         }
 
-        .title-bar .minimize,
-        .title-bar .maximize,
-        .title-bar .close {
-            border: 1px solid #666;
+        .title-bar .minimize {
+            background: linear-gradient(to bottom, #e7e7e7, #d1d1d1);
             width: 20px;
             height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0; /* 角をつなぐ */
-            margin: 0; /* 隙間をなくす */
-        }
-
-        .title-bar .minimize {
-            background: linear-gradient(to bottom, #e7e7e7, #d1d1d1);
         }
 
         .title-bar .maximize {
             background: linear-gradient(to bottom, #a8e4a0, #7bc576);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .title-bar .close {
             background: linear-gradient(to bottom, #ff5e56, #ff3e3a, #d90d00);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         textarea {
@@ -207,6 +210,30 @@
             height: 100%;
             border: none;
         }
+
+        #new-app {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: #f9f9f9;
+            border: 1px solid #a5a5a5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            top: 50px;
+            left: 400px; /* 新しいアプリの位置を調整 */
+            z-index: 10;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #new-app-content {
+            padding: 10px;
+        }
+
+        #history {
+            margin-top: 10px;
+            height: 50%;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -215,19 +242,19 @@
             <button id="start-button"></button>
             <div id="start-menu">
                 <div id="start-menu-content">
-                    <h3>すべてのプログラム</h3>
+                    <h3>スタートメニュー</h3>
                     <ul>
-                        <li><a href="#" onclick="openApp('browser')">Internet Explorer</a></li>
                         <li><a href="#" onclick="openApp('editor')">メモ帳</a></li>
                         <li><a href="#" onclick="openApp('calculator')">電卓</a></li>
-                        <li><a href="#" onclick="openApp('newApp')">天気予報</a></li> <!-- 新しいアプリの追加 -->
+                        <li><a href="#" onclick="openApp('new-app')">新しいアプリ</a></li>
                     </ul>
                 </div>
             </div>
-        </div>
-        <div id="icons">
-            <div class="icon">コンピュータ</div>
-            <div class="icon">ごみ箱</div>
+            <div id="icons">
+                <div class="icon" onclick="openApp('editor')">メモ帳</div>
+                <div class="icon" onclick="openApp('calculator')">電卓</div>
+                <div class="icon" onclick="openApp('new-app')">新しいアプリ</div>
+            </div>
         </div>
         <div id="browser" class="app-window">
             <div class="title-bar">
@@ -238,7 +265,7 @@
                     <button class="close">×</button>
                 </div>
             </div>
-            <div>
+            <div id="iframe-container">
                 <input id="url-input" type="text" placeholder="URLを入力...">
                 <button id="go-button">移動</button>
                 <iframe id="browser-frame"></iframe>
@@ -304,28 +331,34 @@
                 }
             </script>
         </div>
-        <!-- 新しいアプリのウィンドウ -->
-        <div id="newApp" class="app-window">
+        <div id="new-app" class="app-window">
             <div class="title-bar">
-                <span class="title">天気予報</span>
+                <span class="title">計算機</span>
                 <div class="button-group">
                     <button class="minimize">-</button>
                     <button class="maximize">□</button>
                     <button class="close">×</button>
                 </div>
             </div>
-            <div id="weather-content">
-                <h4>今日の天気</h4>
-                <p>都市を入力してください:</p>
-                <input type="text" id="city-input">
-                <button onclick="getWeather()">取得</button>
-                <div id="weather-result"></div>
+            <div id="new-app-content">
+                <input type="text" id="new-app-input" placeholder="数式を入力...">
+                <button onclick="calculateNew()">計算</button>
+                <div id="new-app-output"></div>
+                <div id="history"></div>
             </div>
             <script>
-                function getWeather() {
-                    const city = document.getElementById('city-input').value;
-                    document.getElementById('weather-result').innerHTML = city + "の天気情報を表示中...";
-                    // 実際の天気情報を取得するAPI呼び出しの部分が必要
+                let newAppInput = document.getElementById('new-app-input');
+                let newAppOutput = document.getElementById('new-app-output');
+                let history = document.getElementById('history');
+
+                function calculateNew() {
+                    try {
+                        let result = eval(newAppInput.value);
+                        newAppOutput.innerText = '結果: ' + result;
+                        history.innerHTML += `<div>${newAppInput.value} = ${result}</div>`;
+                    } catch (e) {
+                        newAppOutput.innerText = 'エラー';
+                    }
                 }
             </script>
         </div>
