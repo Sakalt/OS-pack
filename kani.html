@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かわいいOS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .start-menu {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .start-menu-content {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            z-index: 1000;
+        }
+        .start-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .start-menu-content button:hover {
+            background-color: #0056b3;
+        }
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .app {
+            width: 200px;
+            height: 150px;
+            margin: 10px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .app-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .app-button:hover {
+            background-color: #0056b3;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .paint-canvas {
+            border: 1px solid #ddd;
+            cursor: crosshair;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="start-menu" onclick="toggleMenu()">スタート</div>
+    <div class="start-menu-content" id="start-menu-content">
+        <button onclick="openCalculator()">電卓</button>
+        <button onclick="openYouTube()">YouTube</button>
+        <button onclick="openBrowser()">ブラウザ</button>
+        <button onclick="openMath()">計算機</button>
+        <button onclick="openPaint()">ペイント</button>
+    </div>
+
+    <div id="app-content" style="display: none;">
+        <button onclick="closeApp()">閉じる</button>
+        <div id="app-frame"></div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('start-menu-content');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openCalculator() {
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-frame').innerHTML = `
+                <h3>電卓</h3>
+                <input id="calc-display" type="text" disabled>
+                <div>
+                    <button onclick="appendCalc('1')">1</button>
+                    <button onclick="appendCalc('2')">2</button>
+                    <button onclick="appendCalc('3')">3</button>
+                    <button onclick="appendCalc('+')">+</button>
+                </div>
+                <div>
+                    <button onclick="appendCalc('4')">4</button>
+                    <button onclick="appendCalc('5')">5</button>
+                    <button onclick="appendCalc('6')">6</button>
+                    <button onclick="appendCalc('-')">-</button>
+                </div>
+                <div>
+                    <button onclick="appendCalc('7')">7</button>
+                    <button onclick="appendCalc('8')">8</button>
+                    <button onclick="appendCalc('9')">9</button>
+                    <button onclick="appendCalc('*')">*</button>
+                </div>
+                <div>
+                    <button onclick="appendCalc('0')">0</button>
+                    <button onclick="calculate()">=</button>
+                </div>
+            `;
+        }
+
+        function appendCalc(value) {
+            const display = document.getElementById('calc-display');
+            display.value += value;
+        }
+
+        function calculate() {
+            const display = document.getElementById('calc-display');
+            try {
+                display.value = eval(display.value);
+            } catch (e) {
+                display.value = 'エラー';
+            }
+        }
+
+        function openYouTube() {
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-frame').innerHTML = `
+                <h3>YouTube</h3>
+                <input type="text" id="youtube-url" placeholder="YouTube URL">
+                <button onclick="loadYouTube()">表示</button>
+                <iframe id="youtube-frame"></iframe>
+            `;
+        }
+
+        function loadYouTube() {
+            const url = document.getElementById('youtube-url').value;
+            document.getElementById('youtube-frame').src = url;
+        }
+
+        function openBrowser() {
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-frame').innerHTML = `
+                <h3>ブラウザ</h3>
+                <input type="text" id="browser-url" placeholder="URLを入力">
+                <button onclick="loadBrowser()">表示</button>
+                <iframe id="browser-frame"></iframe>
+            `;
+        }
+
+        function loadBrowser() {
+            const url = document.getElementById('browser-url').value;
+            document.getElementById('browser-frame').src = url;
+        }
+
+        function openMath() {
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-frame').innerHTML = `
+                <h3>計算機</h3>
+                <input id="math-display" type="text" placeholder="計算式を入力">
+                <button onclick="calculateMath()">計算</button>
+                <div id="math-result"></div>
+            `;
+        }
+
+        function calculateMath() {
+            const display = document.getElementById('math-display');
+            const resultDiv = document.getElementById('math-result');
+            try {
+                resultDiv.textContent = eval(display.value);
+            } catch (e) {
+                resultDiv.textContent = 'エラー';
+            }
+        }
+
+        function openPaint() {
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-frame').innerHTML = `
+                <h3>ペイント</h3>
+                <canvas id="paint-canvas" class="paint-canvas" width="400" height="400"></canvas>
+                <div>
+                    <label>太さ:
+                        <input type="number" id="brush-size" value="5" min="1">
+                    </label>
+                    <label>色:
+                        <input type="color" id="brush-color" value="#000000">
+                    </label>
+                </div>
+            `;
+
+            const canvas = document.getElementById('paint-canvas');
+            const ctx = canvas.getContext('2d');
+            let painting = false;
+
+            canvas.addEventListener('mousedown', () => {
+                painting = true;
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                painting = false;
+                ctx.beginPath();
+            });
+
+            canvas.addEventListener('mousemove', (event) => {
+                if (painting) {
+                    const brushSize = document.getElementById('brush-size').value;
+                    const brushColor = document.getElementById('brush-color').value;
+                    ctx.lineWidth = brushSize;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = brushColor;
+                    ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+                }
+            });
+        }
+
+        function closeApp() {
+            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('app-frame').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
