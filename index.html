@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Vista Web</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://files.oaiusercontent.com/file-eL1GJgOlivkkfhfnSQC4RFh5?se=2024-09-11T02%3A04%3A11Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D7492015c-87a4-4f01-9593-0392b29c28cb.webp&sig=9k6eUoUegYdGy2VFavYfnSp4Aa6DxMRNfg5k7/2QOEE%3D') no-repeat center center fixed;
+            background-size: cover;
+            color: #dcdcdc;
+        }
+
+        #desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to top, #3c3c3c, #5a5a5a);
+            color: white;
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 100; /* スタートアイコンを最前面に表示 */
+        }
+
+        #start-button {
+            width: 32px;
+            height: 32px;
+            background: url('https://files.oaiusercontent.com/file-Gg5XCO5z3vje8ylVMizUHxDB?se=2024-09-11T02%3A47%3A42Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4dc28aef-55a1-4c34-84eb-157d800b8136.webp&sig=CaitDRjuuBwWzEStcCJVAPIzalvVphtGhQ%2Bw6G%2BVRh4%3D') no-repeat center center;
+            background-size: cover;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            z-index: 101; /* スタートアイコンを最前面に表示 */
+        }
+
+        #start-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            background: linear-gradient(to bottom, #666, #444);
+            color: white;
+            border: 1px solid #666;
+            width: 250px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #start-menu-content {
+            padding: 10px;
+        }
+
+        #start-menu-content h3 {
+            margin-top: 0;
+        }
+
+        #start-menu-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #start-menu-content li {
+            margin: 5px 0;
+        }
+
+        #start-menu-content a {
+            color: white;
+            text-decoration: none;
+        }
+
+        #start-menu-content a:hover {
+            text-decoration: underline;
+        }
+
+        #icons {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+        }
+
+        .icon {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            width: 120px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-window {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(to bottom, #e8e8e8, #c8c8c8);
+            border: 1px solid #a5a5a5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            top: 50px;
+            left: 50px;
+            z-index: 10;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 30px;
+            background: linear-gradient(to right, #2d89ef, #1c6fa5);
+            color: white;
+            padding: 5px;
+            border-bottom: 1px solid #1c5a85;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .title-bar .title {
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        .title-bar button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .title-bar .button-group {
+            display: flex;
+            gap: 0; /* 隣のボタンとつなぐ */
+        }
+
+        .title-bar .minimize,
+        .title-bar .maximize,
+        .title-bar .close {
+            border: 1px solid #666;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0; /* 角をつなぐ */
+            margin: 0; /* 隙間をなくす */
+        }
+
+        .title-bar .minimize {
+            background: linear-gradient(to bottom, #e7e7e7, #d1d1d1);
+        }
+
+        .title-bar .maximize {
+            background: linear-gradient(to bottom, #a8e4a0, #7bc576);
+        }
+
+        .title-bar .close {
+            background: linear-gradient(to bottom, #ff5e56, #ff3e3a, #d90d00);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            resize: none;
+            padding: 5px;
+            box-sizing: border-box;
+            background: #f0f0f0;
+        }
+
+        #calculator-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            padding: 10px;
+        }
+
+        #calculator-content button {
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #999;
+            background: linear-gradient(to bottom, #ffffff, #e1e1e1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #iframe-container {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+
+        #iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button"></button>
+            <div id="start-menu">
+                <div id="start-menu-content">
+                    <h3>すべてのプログラム</h3>
+                    <ul>
+                        <li><a href="#" onclick="openApp('browser')">Internet Explorer</a></li>
+                        <li><a href="#" onclick="openApp('editor')">メモ帳</a></li>
+                        <li><a href="#" onclick="openApp('calculator')">電卓</a></li>
+                        <li><a href="#" onclick="openApp('newApp')">天気予報</a></li> <!-- 新しいアプリの追加 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="icons">
+            <div class="icon">コンピュータ</div>
+            <div class="icon">ごみ箱</div>
+        </div>
+        <div id="browser" class="app-window">
+            <div class="title-bar">
+                <span class="title">Internet Explorer</span>
+                <div class="button-group">
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div>
+                <input id="url-input" type="text" placeholder="URLを入力...">
+                <button id="go-button">移動</button>
+                <iframe id="browser-frame"></iframe>
+            </div>
+            <script>
+                document.getElementById('go-button').addEventListener('click', function() {
+                    const url = document.getElementById('url-input').value;
+                    document.getElementById('browser-frame').src = url;
+                });
+            </script>
+        </div>
+        <div id="editor" class="app-window">
+            <div class="title-bar">
+                <span class="title">メモ帳</span>
+                <div class="button-group">
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <textarea placeholder="ここにテキストを入力..."></textarea>
+        </div>
+        <div id="calculator" class="app-window">
+            <div class="title-bar">
+                <span class="title">電卓</span>
+                <div class="button-group">
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div id="calculator-content">
+                <button onclick="press('7')">7</button>
+                <button onclick="press('8')">8</button>
+                <button onclick="press('9')">9</button>
+                <button onclick="press('/')">/</button>
+                <button onclick="press('4')">4</button>
+                <button onclick="press('5')">5</button>
+                <button onclick="press('6')">6</button>
+                <button onclick="press('*')">*</button>
+                <button onclick="press('1')">1</button>
+                <button onclick="press('2')">2</button>
+                <button onclick="press('3')">3</button>
+                <button onclick="press('-')">-</button>
+                <button onclick="press('0')">0</button>
+                <button onclick="press('.')">.</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="press('+')">+</button>
+            </div>
+            <script>
+                let currentInput = '';
+                function press(value) {
+                    currentInput += value;
+                    document.getElementById('calculator-content').innerHTML = currentInput;
+                }
+                function calculate() {
+                    try {
+                        currentInput = eval(currentInput);
+                        document.getElementById('calculator-content').innerHTML = currentInput;
+                    } catch (e) {
+                        document.getElementById('calculator-content').innerHTML = 'Error';
+                    }
+                }
+            </script>
+        </div>
+        <!-- 新しいアプリのウィンドウ -->
+        <div id="newApp" class="app-window">
+            <div class="title-bar">
+                <span class="title">天気予報</span>
+                <div class="button-group">
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div id="weather-content">
+                <h4>今日の天気</h4>
+                <p>都市を入力してください:</p>
+                <input type="text" id="city-input">
+                <button onclick="getWeather()">取得</button>
+                <div id="weather-result"></div>
+            </div>
+            <script>
+                function getWeather() {
+                    const city = document.getElementById('city-input').value;
+                    document.getElementById('weather-result').innerHTML = city + "の天気情報を表示中...";
+                    // 実際の天気情報を取得するAPI呼び出しの部分が必要
+                }
+            </script>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('start-button').addEventListener('click', function() {
+            const startMenu = document.getElementById('start-menu');
+            startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        function openApp(appId) {
+            const apps = document.querySelectorAll('.app-window');
+            apps.forEach(app => app.style.display = 'none');
+            document.getElementById(appId).style.display = 'block';
+        }
+
+        document.querySelectorAll('.title-bar .close').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.app-window').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
