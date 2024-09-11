@@ -36,8 +36,8 @@
         }
 
         #start-button {
-            width: 48px; /* サイズを変更しました */
-            height: 48px; /* サイズを変更しました */
+            width: 48px; 
+            height: 48px; 
             background: url('https://files.oaiusercontent.com/file-Gg5XCO5z3vje8ylVMizUHxDB?se=2024-09-11T02%3A47%3A42Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4dc28aef-55a1-4c34-84eb-157d800b8136.webp&sig=CaitDRjuuBwWzEStcCJVAPIzalvVphtGhQ%2Bw6G%2BVRh4%3D') no-repeat center center;
             background-size: cover;
             border: none;
@@ -219,7 +219,7 @@
             border: 1px solid #a5a5a5;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             top: 50px;
-            left: 400px; /* 新しいアプリの位置を調整 */
+            left: 400px;
             z-index: 10;
             border-radius: 5px;
             display: none;
@@ -244,6 +244,7 @@
                 <div id="start-menu-content">
                     <h3>スタートメニュー</h3>
                     <ul>
+                        <li><a href="#" onclick="openApp('browser')">Internet Explorer</a></li>
                         <li><a href="#" onclick="openApp('editor')">メモ帳</a></li>
                         <li><a href="#" onclick="openApp('calculator')">電卓</a></li>
                         <li><a href="#" onclick="openApp('new-app')">新しいアプリ</a></li>
@@ -251,6 +252,7 @@
                 </div>
             </div>
             <div id="icons">
+                <div class="icon" onclick="openApp('browser')">Internet Explorer</div>
                 <div class="icon" onclick="openApp('editor')">メモ帳</div>
                 <div class="icon" onclick="openApp('calculator')">電卓</div>
                 <div class="icon" onclick="openApp('new-app')">新しいアプリ</div>
