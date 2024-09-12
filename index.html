@@ -246,142 +246,143 @@
                     <ul>
                         <li><a href="#" onclick="openApp('browser')">Internet Explorer</a></li>
                         <li><a href="#" onclick="openApp('editor')">メモ帳</a></li>
-                        <li><a href="#" onclick="openApp('calculator')">計算機</a></li>
-                        <li><a href="#" onclick="openApp('newApp')">新しいアプリ</a></li>
+                        <li><a href="#" onclick="openApp('calculator')">電卓</a></li>
+                        <li><a href="#" onclick="openApp('new-app')">新しいアプリ</a></li>
                     </ul>
                 </div>
             </div>
-            <span>開始</span>
-        </div>
-
-        <div id="icons">
-            <div class="icon" onclick="openApp('browser')">Internet Explorer</div>
-            <div class="icon" onclick="openApp('editor')">メモ帳</div>
-            <div class="icon" onclick="openApp('calculator')">計算機</div>
-            <div class="icon" onclick="openApp('newApp')">新しいアプリ</div>
-        </div>
-
-        <div id="calculator" class="app-window">
-            <div class="title-bar">
-                <span class="title">計算機</span>
-                <div class="button-group">
-                    <button class="minimize" onclick="minimizeWindow('calculator')">_</button>
-                    <button class="maximize" onclick="maximizeWindow('calculator')">[]</button>
-                    <button class="close" onclick="closeWindow('calculator')">×</button>
-                </div>
+            <div id="icons">
+                <div class="icon" onclick="openApp('browser')">Internet Explorer</div>
+                <div class="icon" onclick="openApp('editor')">メモ帳</div>
+                <div class="icon" onclick="openApp('calculator')">電卓</div>
+                <div class="icon" onclick="openApp('new-app')">新しいアプリ</div>
             </div>
-            <div id="calculator-content">
-                <button onclick="pressNumber('7')">7</button>
-                <button onclick="pressNumber('8')">8</button>
-                <button onclick="pressNumber('9')">9</button>
-                <button onclick="pressOperator('/')">/</button>
-                <button onclick="pressNumber('4')">4</button>
-                <button onclick="pressNumber('5')">5</button>
-                <button onclick="pressNumber('6')">6</button>
-                <button onclick="pressOperator('*')">*</button>
-                <button onclick="pressNumber('1')">1</button>
-                <button onclick="pressNumber('2')">2</button>
-                <button onclick="pressNumber('3')">3</button>
-                <button onclick="pressOperator('-')">-</button>
-                <button onclick="pressNumber('0')">0</button>
-                <button onclick="pressOperator('.')">.</button>
-                <button onclick="calculateResult()">=</button>
-                <button onclick="pressOperator('+')">+</button>
-            </div>
-            <div id="history"></div>
         </div>
-
         <div id="browser" class="app-window">
             <div class="title-bar">
                 <span class="title">Internet Explorer</span>
                 <div class="button-group">
-                    <button class="minimize" onclick="minimizeWindow('browser')">_</button>
-                    <button class="maximize" onclick="maximizeWindow('browser')">[]</button>
-                    <button class="close" onclick="closeWindow('browser')">×</button>
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
                 </div>
             </div>
             <div id="iframe-container">
-                <iframe src="https://www.example.com" id="browser-frame"></iframe>
+                <input id="url-input" type="text" placeholder="URLを入力...">
+                <button id="go-button">移動</button>
+                <iframe id="browser-frame"></iframe>
             </div>
+            <script>
+                document.getElementById('go-button').addEventListener('click', function() {
+                    const url = document.getElementById('url-input').value;
+                    document.getElementById('browser-frame').src = url;
+                });
+            </script>
         </div>
-
         <div id="editor" class="app-window">
             <div class="title-bar">
                 <span class="title">メモ帳</span>
                 <div class="button-group">
-                    <button class="minimize" onclick="minimizeWindow('editor')">_</button>
-                    <button class="maximize" onclick="maximizeWindow('editor')">[]</button>
-                    <button class="close" onclick="closeWindow('editor')">×</button>
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
                 </div>
             </div>
-            <textarea id="editor-text"></textarea>
+            <textarea placeholder="ここにテキストを入力..."></textarea>
         </div>
-
-        <div id="newApp" class="app-window">
+        <div id="calculator" class="app-window">
             <div class="title-bar">
-                <span class="title">新しいアプリ</span>
+                <span class="title">電卓</span>
                 <div class="button-group">
-                    <button class="minimize" onclick="minimizeWindow('newApp')">_</button>
-                    <button class="maximize" onclick="maximizeWindow('newApp')">[]</button>
-                    <button class="close" onclick="closeWindow('newApp')">×</button>
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div id="calculator-content">
+                <button onclick="press('7')">7</button>
+                <button onclick="press('8')">8</button>
+                <button onclick="press('9')">9</button>
+                <button onclick="press('/')">/</button>
+                <button onclick="press('4')">4</button>
+                <button onclick="press('5')">5</button>
+                <button onclick="press('6')">6</button>
+                <button onclick="press('*')">*</button>
+                <button onclick="press('1')">1</button>
+                <button onclick="press('2')">2</button>
+                <button onclick="press('3')">3</button>
+                <button onclick="press('-')">-</button>
+                <button onclick="press('0')">0</button>
+                <button onclick="press('.')">.</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="press('+')">+</button>
+            </div>
+            <script>
+                let currentInput = '';
+                function press(value) {
+                    currentInput += value;
+                    document.getElementById('calculator-content').innerHTML = currentInput;
+                }
+                function calculate() {
+                    try {
+                        currentInput = eval(currentInput);
+                        document.getElementById('calculator-content').innerHTML = currentInput;
+                    } catch (e) {
+                        document.getElementById('calculator-content').innerHTML = 'Error';
+                    }
+                }
+            </script>
+        </div>
+        <div id="new-app" class="app-window">
+            <div class="title-bar">
+                <span class="title">計算機</span>
+                <div class="button-group">
+                    <button class="minimize">-</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
                 </div>
             </div>
             <div id="new-app-content">
-                <p>新しいアプリの内容</p>
+                <input type="text" id="new-app-input" placeholder="数式を入力...">
+                <button onclick="calculateNew()">計算</button>
+                <div id="new-app-output"></div>
+                <div id="history"></div>
             </div>
+            <script>
+                let newAppInput = document.getElementById('new-app-input');
+                let newAppOutput = document.getElementById('new-app-output');
+                let history = document.getElementById('history');
+
+                function calculateNew() {
+                    try {
+                        let result = eval(newAppInput.value);
+                        newAppOutput.innerText = '結果: ' + result;
+                        history.innerHTML += `<div>${newAppInput.value} = ${result}</div>`;
+                    } catch (e) {
+                        newAppOutput.innerText = 'エラー';
+                    }
+                }
+            </script>
         </div>
     </div>
 
     <script>
         document.getElementById('start-button').addEventListener('click', function() {
             const startMenu = document.getElementById('start-menu');
-            startMenu.style.display = startMenu.style.display === 'none' || startMenu.style.display === '' ? 'block' : 'none';
+            startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
         });
 
         function openApp(appId) {
             const apps = document.querySelectorAll('.app-window');
-            apps.forEach(app => {
-                if (app.id === appId) {
-                    app.style.display = 'block';
-                } else {
-                    app.style.display = 'none';
-                }
+            apps.forEach(app => app.style.display = 'none');
+            document.getElementById(appId).style.display = 'block';
+        }
+
+        document.querySelectorAll('.title-bar .close').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.app-window').style.display = 'none';
             });
-            document.getElementById('start-menu').style.display = 'none';
-        }
-
-        function closeWindow(appId) {
-            document.getElementById(appId).style.display = 'none';
-        }
-
-        function minimizeWindow(appId) {
-            document.getElementById(appId).style.display = 'none';
-        }
-
-        function maximizeWindow(appId) {
-            const app = document.getElementById(appId);
-            app.style.width = '100%';
-            app.style.height = '100%';
-            app.style.top = '0';
-            app.style.left = '0';
-        }
-
-        function pressNumber(number) {
-            const calcDisplay = document.getElementById('calculator-content');
-            calcDisplay.textContent += number;
-        }
-
-        function pressOperator(operator) {
-            const calcDisplay = document.getElementById('calculator-content');
-            calcDisplay.textContent += ' ' + operator + ' ';
-        }
-
-        function calculateResult() {
-            const calcDisplay = document.getElementById('calculator-content');
-            const result = eval(calcDisplay.textContent);
-            document.getElementById('history').innerHTML += `<p>${calcDisplay.textContent} = ${result}</p>`;
-            calcDisplay.textContent = result;
-        }
+        });
     </script>
 </body>
 </html>
