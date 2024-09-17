@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルOS</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #e0e0e0, #ffffff);
+        }
+
+        #taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to right, #333333, #666666);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 -1px 5px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        #start-menu {
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 40px);
+            background: linear-gradient(to bottom, #f0f0f0, #ffffff);
+            overflow: hidden;
+        }
+
+        .icon {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            cursor: pointer;
+            position: absolute;
+        }
+
+        .icon svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        #windows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .window {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 10px;
+            pointer-events: auto;
+            z-index: 1000;
+        }
+
+        .window-header {
+            background: linear-gradient(to right, #333333, #666666);
+            color: white;
+            padding: 5px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .window-close {
+            cursor: pointer;
+        }
+
+        #error-dialog, #blue-screen {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            border: 2px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        #blue-screen {
+            background: #0000ff;
+            color: #fff;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        #error-dialog button, #blue-screen button {
+            margin: 10px;
+            padding: 5px 10px;
+        }
+
+        #paint-canvas {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="taskbar">
+        <div id="start-menu">スタート</div>
+        <div id="taskbar-items"></div>
+    </div>
+    <div id="desktop">
+        <div class="icon" style="top: 10px; left: 10px;" onclick="openWindow('calculator')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20M18 2v20M2 6h20M2 18h20"/></svg>
+            <p>電卓</p>
+        </div>
+        <div class="icon" style="top: 10px; left: 120px;" onclick="openWindow('paint')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18V8H3v13zM3 3v2h18V3H3z"/></svg>
+            <p>ペイント</p>
+        </div>
+        <div class="icon" style="top: 10px; left: 230px;" onclick="openWindow('note')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20H6V2zm2 2v16M16 4v16"/></svg>
+            <p>メモ</p>
+        </div>
+        <div class="icon" style="top: 120px; left: 10px;" onclick="openErrorDialog()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2zm0 13v-4m0 4h.01"/></svg>
+            <p>トマト</p>
+        </div>
+        <div class="icon" style="top: 120px; left: 120px;" onclick="openErrorDialog()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20h12V2H6zm0 18V8h12v12H6zm6-6v-4M6 9h12"/></svg>
+            <p>Scratch</p>
+        </div>
+        <div id="windows"></div>
+    </div>
+    <div id="error-dialog">
+        <p>あなたは不正なプログラムを開きました。このOSを文鎮にしますか？</p>
+        <button onclick="showBlueScreen()">はい</button>
+        <button onclick="showBlueScreen()">いいえ</button>
+    </div>
+    <div id="blue-screen">
+        <p>STOP: 0x0000001E (0xC0000005, 0x00000000, 0x00000000, 0x00000000)</p>
+        <p>無効な操作が行われました。</p>
+        <button onclick="closeBlueScreen()">OK</button>
+    </div>
+    <script>
+        function openWindow(app) {
+            let content = '';
+            if (app === 'calculator') {
+                content = `
+                    <div class="window-header">
+                        電卓
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <div class="window-content">
+                        <input type="text" id="calc-display" readonly>
+                        <br>
+                        <button onclick="calc('1')">1</button>
+                        <button onclick="calc('2')">2</button>
+                        <button onclick="calc('3')">3</button>
+                        <button onclick="calc('+')">+</button>
+                        <br>
+                        <button onclick="calc('4')">4</button>
+                        <button onclick="calc('5')">5</button>
+                        <button onclick="calc('6')">6</button>
+                        <button onclick="calc('-')">-</button>
+                        <br>
+                        <button onclick="calc('7')">7</button>
+                        <button onclick="calc('8')">8</button>
+                        <button onclick="calc('9')">9</button>
+                        <button onclick="calc('*')">*</button>
+                        <br>
+                        <button onclick="calc('0')">0</button>
+                        <button onclick="calc('/')">/</button>
+                        <button onclick="calc('=')">=</button>
+                        <button onclick="calc('C')">C</button>
+                    </div>
+                `;
+            } else if (app === 'paint') {
+                content = `
+                    <div class="window-header">
+                        ペイント
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <canvas id="paint-canvas"></canvas>
+                `;
+            } else if (app === 'note') {
+                content = `
+                    <div class="window-header">
+                        メモ
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <textarea style="width:100%; height:100%;"></textarea>
+                `;
+            }
+            const windowDiv = document.createElement('div');
+            windowDiv.classList.add('window');
+            windowDiv.innerHTML = content;
+            document.getElementById('windows').appendChild(windowDiv);
+            makeDraggable(windowDiv);
+        }
+
+        function closeWindow(element) {
+            const windowDiv = element.parentElement.parentElement;
+            windowDiv.remove();
+        }
+
+        function openErrorDialog() {
+            document.getElementById('error-dialog').style.display = 'block';
+        }
+
+        function showBlueScreen() {
+            document.getElementById('error-dialog').style.display = 'none';
+            document.getElementById('blue-screen').style.display = 'block';
+        }
+
+        function closeBlueScreen() {
+            document.getElementById('blue-screen').style.display = 'none';
+        }
+
+        function calc(value) {
+            const display = document.getElementById('calc-display');
+            if (value === '=') {
+                try {
+                    display.value = eval(display.value);
+                } catch (e) {
+                    display.value = 'エラー';
+                }
+            } else if (value === 'C') {
+                display.value = '';
+            } else {
+                display.value += value;
+            }
+        }
+
+        function makeDraggable(element) {
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            element.querySelector('.window-header').addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - element.getBoundingClientRect().left;
+                offsetY = e.clientY - element.getBoundingClientRect().top;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    element.style.left = (e.clientX - offsetX) + 'px';
+                    element.style.top = (e.clientY - offsetY) + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        }
+    </script>
+</body>
+</html>
