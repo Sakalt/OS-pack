@@ -121,6 +121,12 @@
             background: white;
             border: 1px solid #ccc;
         }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -130,7 +136,7 @@
     </div>
     <div id="desktop">
         <div class="icon" style="top: 10px; left: 10px;" onclick="openWindow('calculator')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20M18 2v20M2 6h20M2 18h20"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20H6V2zm0 18V8h12v12H6zm6-6v-4M6 9h12"/></svg>
             <p>電卓</p>
         </div>
         <div class="icon" style="top: 10px; left: 120px;" onclick="openWindow('paint')">
@@ -138,16 +144,20 @@
             <p>ペイント</p>
         </div>
         <div class="icon" style="top: 10px; left: 230px;" onclick="openWindow('note')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20H6V2zm2 2v16M16 4v16"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20h12V2H6zm0 18V8h12v12H6zm6-6v-4M6 9h12"/></svg>
             <p>メモ</p>
         </div>
-        <div class="icon" style="top: 120px; left: 10px;" onclick="openErrorDialog()">
+        <div class="icon" style="top: 120px; left: 10px;" onclick="openWindow('solitaire')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20H6V2zM6 4h12v2H6V4zm0 14h12v2H6v-2z"/></svg>
+            <p>ソリティア</p>
+        </div>
+        <div class="icon" style="top: 120px; left: 120px;" onclick="openWindow('meme')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20H4V2zm12 4h4v12h-4V6zm-8 0h4v12H8V6zm-4 4h4v12H4V10z"/></svg>
+            <p>ネットミーム</p>
+        </div>
+        <div class="icon" style="top: 120px; left: 230px;" onclick="openErrorDialog()">
             <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2zm0 13v-4m0 4h.01"/></svg>
             <p>トマト</p>
-        </div>
-        <div class="icon" style="top: 120px; left: 120px;" onclick="openErrorDialog()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20h12V2H6zm0 18V8h12v12H6zm6-6v-4M6 9h12"/></svg>
-            <p>Scratch</p>
         </div>
         <div id="windows"></div>
     </div>
@@ -188,10 +198,10 @@
                         <button onclick="calc('9')">9</button>
                         <button onclick="calc('*')">*</button>
                         <br>
-                        <button onclick="calc('0')">0</button>
-                        <button onclick="calc('/')">/</button>
-                        <button onclick="calc('=')">=</button>
                         <button onclick="calc('C')">C</button>
+                        <button onclick="calc('0')">0</button>
+                        <button onclick="calc('=')">=</button>
+                        <button onclick="calc('/')">/</button>
                     </div>
                 `;
             } else if (app === 'paint') {
@@ -200,7 +210,9 @@
                         ペイント
                         <span class="window-close" onclick="closeWindow(this)">×</span>
                     </div>
-                    <canvas id="paint-canvas"></canvas>
+                    <div class="window-content">
+                        <canvas id="paint-canvas"></canvas>
+                    </div>
                 `;
             } else if (app === 'note') {
                 content = `
@@ -208,9 +220,45 @@
                         メモ
                         <span class="window-close" onclick="closeWindow(this)">×</span>
                     </div>
-                    <textarea style="width:100%; height:100%;"></textarea>
+                    <div class="window-content">
+                        <textarea id="note-content" rows="10" cols="30"></textarea>
+                    </div>
+                `;
+            } else if (app === 'solitaire') {
+                content = `
+                    <div class="window-header">
+                        ソリティア
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <div class="window-content">
+                        <iframe src="https://scratch.mit.edu/projects/666713609/embed" allowtransparency="true" width="485" height="402" frameborder="0" scrolling="no" allowfullscreen></iframe>
+                    </div>
+                `;
+            } else if (app === 'meme') {
+                content = `
+                    <div class="window-header">
+                        ネットミーム
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <div class="window-content">
+                        <p>「ブックオフなのに本ねーじゃん」</p>
+                        <img src="https://example.com/bookoff-meme.png" alt="ネットミーム" width="300">
+                    </div>
+                `;
+            } else if (app === 'tomato') {
+                content = `
+                    <div class="window-header">
+                        トマト
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <div class="window-content">
+                        <p>あなたは不正なプログラムを開きました。このOSを文鎮にしますか？</p>
+                        <button onclick="showBlueScreen()">はい</button>
+                        <button onclick="showBlueScreen()">いいえ</button>
+                    </div>
                 `;
             }
+
             const windowDiv = document.createElement('div');
             windowDiv.classList.add('window');
             windowDiv.innerHTML = content;
