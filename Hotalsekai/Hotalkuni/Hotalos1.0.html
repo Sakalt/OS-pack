@@ -155,7 +155,11 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20H4V2zm12 4h4v12h-4V6zm-8 0h4v12H8V6zm-4 4h4v12H4V10z"/></svg>
             <p>ネットミーム</p>
         </div>
-        <div class="icon" style="top: 120px; left: 230px;" onclick="openErrorDialog()">
+        <div class="icon" style="top: 120px; left: 230px;" onclick="openWindow('scratch')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18V3H3zm2 2h14v2H5V5zm0 4h14v2H5V9zm0 4h14v2H5v-2zm0 4h14v2H5v-2z"/></svg>
+            <p>Scratch</p>
+        </div>
+        <div class="icon" style="top: 230px; left: 10px;" onclick="openWindow('tomato')">
             <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2zm0 13v-4m0 4h.01"/></svg>
             <p>トマト</p>
         </div>
@@ -255,6 +259,16 @@
                         <p>あなたは不正なプログラムを開きました。このOSを文鎮にしますか？</p>
                         <button onclick="showBlueScreen()">はい</button>
                         <button onclick="showBlueScreen()">いいえ</button>
+                    </div>
+                `;
+            } else if (app === 'scratch') {
+                content = `
+                    <div class="window-header">
+                        Scratch
+                        <span class="window-close" onclick="closeWindow(this)">×</span>
+                    </div>
+                    <div class="window-content">
+                        <iframe src="https://scratch.mit.edu/projects/666713609/embed" allowtransparency="true" width="485" height="402" frameborder="0" scrolling="no" allowfullscreen></iframe>
                     </div>
                 `;
             }
