@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマホOS</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .home-screen {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            margin: 20px;
+            cursor: pointer;
+        }
+
+        .app-window {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: none;
+            z-index: 10;
+        }
+
+        .app-header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .close-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .text-editor {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .calculator button {
+            padding: 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .bottle {
+            width: 150px;
+            height: 300px;
+            border: 5px solid #000;
+            border-radius: 50px;
+            position: relative;
+            background: #e0e0e0;
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #00aaff;
+            transition: height 0.5s ease;
+        }
+
+        .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="home-screen" id="homeScreen">
+    <svg class="app-icon" onclick="openApp('textEditor')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z" fill="#000"/>
+    </svg>
+
+    <svg class="app-icon" onclick="openApp('calculator')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M5 5h14v14H5V5zm2 2v2h10V7H7zm0 4v2h4v-2H7zm0 4v2h4v-2H7zm6-4v2h4v-2h-4zm0 4v2h4v-2h-4z" fill="#000"/>
+    </svg>
+
+    <div class="bottle">
+        <div class="water" id="water"></div>
+        <div class="text" id="batteryText">0%</div>
+    </div>
+</div>
+
+<div class="app-window" id="textEditor">
+    <div class="app-header">
+        <span>텍스트 편집기</span>
+        <button class="close-btn" onclick="closeApp('textEditor')">닫기</button>
+    </div>
+    <textarea class="text-editor"></textarea>
+</div>
+
+<div class="app-window" id="calculator">
+    <div class="app-header">
+        <span>계산기</span>
+        <button class="close-btn" onclick="closeApp('calculator')">닫기</button>
+    </div>
+    <div class="calculator">
+        <button onclick="inputCalc('7')">7</button>
+        <button onclick="inputCalc('8')">8</button>
+        <button onclick="inputCalc('9')">9</button>
+        <button onclick="inputCalc('/')">/</button>
+        <button onclick="inputCalc('4')">4</button>
+        <button onclick="inputCalc('5')">5</button>
+        <button onclick="inputCalc('6')">6</button>
+        <button onclick="inputCalc('*')">*</button>
+        <button onclick="inputCalc('1')">1</button>
+        <button onclick="inputCalc('2')">2</button>
+        <button onclick="inputCalc('3')">3</button>
+        <button onclick="inputCalc('-')">-</button>
+        <button onclick="inputCalc('0')">0</button>
+        <button onclick="inputCalc('.')">.</button>
+        <button onclick="calculateResult()">=</button>
+        <button onclick="inputCalc('+')">+</button>
+        <button onclick="clearCalc()">C</button>
+    </div>
+</div>
+
+<script>
+    function openApp(appId) {
+        document.getElementById(appId).style.display = 'block';
+    }
+
+    function closeApp(appId) {
+        document.getElementById(appId).style.display = 'none';
+    }
+
+    let calcInput = '';
+    function inputCalc(value) {
+        calcInput += value;
+    }
+
+    function calculateResult() {
+        try {
+            calcInput = eval(calcInput).toString();
+            alert('결과: ' + calcInput);
+        } catch {
+            alert('에러');
+        }
+    }
+
+    function clearCalc() {
+        calcInput = '';
+    }
+
+    navigator.getBattery().then(function(battery) {
+        function updateBatteryStatus() {
+            let level = battery.level;
+            let percent = Math.floor(level * 100);
+            document.getElementById('water').style.height = percent + '%';
+            document.getElementById('batteryText').innerText = percent + '%';
+        }
+
+        updateBatteryStatus();
+
+        battery.addEventListener('levelchange', updateBatteryStatus);
+    });
+</script>
+
+</body>
+</html>
