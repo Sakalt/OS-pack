@@ -11,7 +11,7 @@
             height: 100%;
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(112deg, #00c3e2, #00a3a2, #00c3e2, #00a3a2, #00c3e2, #00a3a2); /* 少しグラデーション */
+            background: url('7haikei.png');
         }
 
         /* デスクトップのアイコン表示 */
@@ -27,7 +27,6 @@
         .icon {
             width: 80px;
             height: 80px;
-            background: #008596;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             margin: 10px;
@@ -37,6 +36,14 @@
             cursor: pointer;
             position: relative;
             transition: transform 0.2s;
+        }
+
+        #calculator-icon, #settings-icon {
+            background: #aaaaaa;
+        }
+
+        #browser-icon {
+            background: #00aaaa;
         }
 
         .icon:hover {
@@ -63,6 +70,7 @@
 
         .app-window.open {
             display: block;
+            top: 0;
         }
 
         .app-window.closed {
@@ -99,6 +107,36 @@
             transform: translateX(-50%);
             color: gray;
             font-size: 12px;
+        }
+
+        /* 電卓のスタイル */
+        #calculator-ui {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        #calculator-ui button {
+            font-size: 20px;
+            padding: 15px;
+            border: none;
+            background: #f1f1f1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #calculator-ui button:hover {
+            background: #ddd;
+        }
+
+        /* ブラウザのスタイル */
+        #browser input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -163,7 +201,7 @@
         <div class="app-content">
             <h1>ブラウザ</h1>
             <p>ここでウェブサイトを閲覧できます。</p>
-            <input type="text" placeholder="URLを入力" style="width: 100%; padding: 10px;">
+            <input type="text" placeholder="URLを入力">
         </div>
     </div>
 
