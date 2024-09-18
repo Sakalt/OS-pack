@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS 7スタイルアプリ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@6.3.0/framework7-bundle.min.css">
+    <style>
+        /* iOS 7っぽいフラットなデザイン */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(112deg, #00c3e2, #00a3a2, #00c3e2, #00a3a2, #00c3e2, #00a3a2); /* 少しグラデーション */
+        }
+
+        /* デスクトップのアイコン表示 */
+        #desktop {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: #008596;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+        }
+
+        .icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* アプリのウィンドウ */
+        .app-window {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: top 0.3s;
+            display: none; /* 初期状態で非表示 */
+        }
+
+        .app-window.open {
+            display: block;
+        }
+
+        .app-window.closed {
+            top: 100%;
+        }
+
+        .app-content {
+            padding: 20px;
+        }
+
+        /* コントロールセンターのデザイン */
+        #control-center {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            transition: bottom 0.3s;
+            z-index: 1000;
+        }
+
+        #control-center.visible {
+            bottom: 0;
+        }
+
+        /* スワイプガイド */
+        #swipe-guide {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: gray;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- デスクトップ -->
+    <div id="desktop">
+        <!-- 電卓アイコン -->
+        <div class="icon" id="calc-icon">
+            <!-- 電卓アイコンのSVG -->
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3C5 2.44772 5.44772 2 6 2H18C18.5523 2 19 2.44772 19 3V21C19 21.5523 18.5523 22 18 22H6C5.44772 22 5 21.5523 5 21V3ZM6 0C4.34315 0 3 1.34315 3 3V21C3 22.6569 4.34315 24 6 24H18C19.6569 24 21 22.6569 21 21V3C21 1.34315 19.6569 0 18 0H6ZM8 8H16V10H8V8ZM8 12H16V14H8V12ZM8 16H16V18H8V16ZM6 6H18V8H6V6ZM6 10H18V12H6V10ZM6 14H18V16H6V14ZM6 18H18V20H6V18Z"/></svg>
+        </div>
+        <!-- ブラウザアイコン -->
+        <div class="icon" id="browser-icon">
+            <!-- ブラウザアイコンのSVG -->
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.589 3 4 6.589 4 11C4 15.411 7.589 19 12 19C16.411 19 20 15.411 20 11C20 6.589 16.411 3 12 3ZM12 17C8.686 17 6 14.314 6 11C6 7.686 8.686 5 12 5C15.314 5 18 7.686 18 11C18 14.314 15.314 17 12 17ZM12 7C10.343 7 9 8.343 9 10C9 11.657 10.343 13 12 13C13.657 13 15 11.657 15 10C15 8.343 13.657 7 12 7ZM12 11C11.4477 11 11 10.5523 11 10C11 9.44772 11.4477 9 12 9C12.5523 9 13 9.44772 13 10C13 10.5523 12.5523 11 12 11Z"/></svg>
+        </div>
+        <!-- システムプレファレンスアイコン -->
+        <div class="icon" id="settings-icon">
+            <!-- システムプレファレンスアイコンのSVG -->
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15C12.8284 15 13.5 14.3284 13.5 13.5C13.5 12.6716 12.8284 12 12 12C11.1716 12 10.5 12.6716 10.5 13.5C10.5 14.3284 11.1716 15 12 15ZM12 17.5C10.3556 17.5 9 16.1444 9 14.5C9 12.8556 10.3556 11.5 12 11.5C13.6444 11.5 15 12.8556 15 14.5C15 16.1444 13.6444 17.5 12 17.5ZM18.7071 16.2929L17.5 15.0858L16.2071 16.2071L14.7071 14.7071L15.0858 13.5L16.2071 12.2071L15.0858 11.0858L16.2929 10.2929L17.5 11.5L18.7071 10.2929L19.5 11.5L18.2929 12.7071L19.5 13.9142L18.7071 16.2929ZM4.5 11.5C4.5 9.8556 5.8556 8.5 7.5 8.5C9.1444 8.5 10.5 9.8556 10.5 11.5C10.5 13.1444 9.1444 14.5 7.5 14.5C5.8556 14.5 4.5 13.1444 4.5 11.5ZM4 11.5C4 14.4375 6.5625 17 9.5 17C10.636 17 11.7304 16.694 12.6611 16.1411L10.7071 14.2071L11.5 13.5L10.2071 12.2071L8.5 13.5L9.5 14.5L10.2071 15.2071L8.2071 17.2071L7.5 16.5L6.2071 17.7929L4.5 16.2071L5.7929 15.2071L4.5 13.5L5.7929 12.2071L4 11.5ZM16.5 17C18.1444 17 19.5 15.6444 19.5 14C19.5 12.3556 18.1444 11 16.5 11C14.8556 11 13.5 12.3556 13.5 14C13.5 15.6444 14.8556 17 16.5 17ZM16.5 13C17.3284 13 18 13.6716 18 14.5C18 15.3284 17.3284 16 16.5 16C15.6716 16 15 15.3284 15 14.5C15 13.6716 15.6716 13 16.5 13Z"/></svg>
+        </div>
+    </div>
+
+    <!-- 電卓アプリ -->
+    <div class="app-window" id="calculator">
+        <div class="app-content">
+            <h1>電卓</h1>
+            <div id="calculator-ui">
+                <input type="text" id="calc-display" disabled>
+                <div>
+                    <button onclick="appendToCalc('7')">7</button>
+                    <button onclick="appendToCalc('8')">8</button>
+                    <button onclick="appendToCalc('9')">9</button>
+                    <button onclick="appendToCalc('/')">/</button>
+                </div>
+                <div>
+                    <button onclick="appendToCalc('4')">4</button>
+                    <button onclick="appendToCalc('5')">5</button>
+                    <button onclick="appendToCalc('6')">6</button>
+                    <button onclick="appendToCalc('*')">*</button>
+                </div>
+                <div>
+                    <button onclick="appendToCalc('1')">1</button>
+                    <button onclick="appendToCalc('2')">2</button>
+                    <button onclick="appendToCalc('3')">3</button>
+                    <button onclick="appendToCalc('-')">-</button>
+                </div>
+                <div>
+                    <button onclick="appendToCalc('0')">0</button>
+                    <button onclick="appendToCalc('.')">.</button>
+                    <button onclick="calculate()">=</button>
+                    <button onclick="appendToCalc('+')">+</button>
+                </div>
+                <button onclick="clearCalc()">C</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ブラウザアプリ -->
+    <div class="app-window" id="browser">
+        <div class="app-content">
+            <h1>ブラウザ</h1>
+            <p>ここでウェブサイトを閲覧できます。</p>
+            <input type="text" placeholder="URLを入力" style="width: 100%; padding: 10px;">
+        </div>
+    </div>
+
+    <!-- システムプレファレンスアプリ -->
+    <div class="app-window" id="settings">
+        <div class="app-content">
+            <h1>システム設定</h1>
+            <div>
+                <h2>バッテリー</h2>
+                <p>充電量: <span id="battery-level">50%</span></p>
+            </div>
+            <div>
+                <h2>Wi-Fi</h2>
+                <p>接続中のネットワーク: <span id="wifi-network">HomeNetwork</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- コントロールセンター -->
+    <div id="control-center">
+        <h2>コントロールセンター</h2>
+        <p>ここで充電量やWi-Fiなどを確認できます。</p>
+    </div>
+
+    <div id="swipe-guide">上にスワイプしてコントロールセンターを表示</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/framework7@6.3.0/framework7-bundle.min.js"></script>
+    <script>
+        var controlCenter = document.getElementById('control-center');
+        var swipeGuide = document.getElementById('swipe-guide');
+        var appWindows = document.querySelectorAll('.app-window');
+        var icons = document.querySelectorAll('.icon');
+        var currentApp = null;
+        var swipeCount = 0;
+        var startY = 0;
+
+        function showApp(appId) {
+            // 現在表示中のアプリを非表示にする
+            appWindows.forEach(function(app) {
+                app.classList.remove('open');
+                app.classList.add('closed');
+            });
+            // 指定されたアプリを表示する
+            document.getElementById(appId).classList.add('open');
+            document.getElementById(appId).classList.remove('closed');
+            currentApp = appId;
+        }
+
+        function hideApp() {
+            if (currentApp) {
+                document.getElementById(currentApp).classList.add('closed');
+                currentApp = null;
+            }
+        }
+
+        // 電卓の動作
+        function appendToCalc(value) {
+            var display = document.getElementById('calc-display');
+            display.value += value;
+        }
+
+        function calculate() {
+            var display = document.getElementById('calc-display');
+            try {
+                display.value = eval(display.value);
+            } catch (e) {
+                display.value = 'エラー';
+            }
+        }
+
+        function clearCalc() {
+            document.getElementById('calc-display').value = '';
+        }
+
+        // スワイプイベントのハンドリング
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            var endY = e.changedTouches[0].clientY;
+            var deltaY = startY - endY;
+
+            // 上スワイプでコントロールセンター表示
+            if (deltaY > 50) {
+                controlCenter.classList.add('visible');
+                swipeGuide.style.display = 'none';
+            }
+            // 下スワイプでアプリを閉じる
+            else if (deltaY < -50) {
+                swipeCount++;
+                if (swipeCount === 2) {
+                    hideApp();
+                }
+            } else {
+                swipeCount = 0; // スワイプが弱い場合はカウントリセット
+            }
+        });
+
+        // アイコンのクリックでアプリを開く
+        icons.forEach(icon => {
+            icon.addEventListener('click', function() {
+                var appId = this.id.replace('-icon', '');
+                showApp(appId);
+            });
+        });
+    </script>
+</body>
+</html>
