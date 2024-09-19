@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 8? Web</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('img/visture/background3.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: #dcdcdc;
+        }
+
+        #desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to top, #3c3c3c, #5a5a5a);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        #start-button {
+            width: 48px; 
+            height: 48px; 
+            background: url('img/visture/win10.png') no-repeat center center;
+            background-size: cover;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        #start-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            background: linear-gradient(to bottom, #666, #444);
+            color: white;
+            border: 1px solid #666;
+            width: 250px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #start-menu-content {
+            padding: 10px;
+        }
+
+        #start-menu-content h3 {
+            margin-top: 0;
+        }
+
+        #start-menu-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #start-menu-content li {
+            margin: 5px 0;
+        }
+
+        #start-menu-content a {
+            color: white;
+            text-decoration: none;
+        }
+
+        #start-menu-content a:hover {
+            text-decoration: underline;
+        }
+
+        #icons {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+        }
+
+        .icon {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            width: 120px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-window {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(to bottom, #e8e8e8, #c8c8c8);
+            border: 1px solid #a5a5a5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            top: 50px;
+            left: 50px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 30px;
+            background: linear-gradient(to right, #2d89ef, #1c6fa5);
+            color: white;
+            padding: 5px;
+            border-bottom: 1px solid #1c5a85;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .title-bar .title {
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        .title-bar button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .title-bar .button-group {
+            display: flex;
+            gap: 0;
+        }
+
+        .title-bar .minimize {
+            background: linear-gradient(to bottom, #d1d1d1aa, #d1d1d1aa);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-bar .maximize {
+            background: linear-gradient(to bottom, #00aa00aa, #00aa00aa);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-bar .close {
+            background: linear-gradient(to bottom, #ff5e56, #ff5e56, #ff5e56);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            resize: none;
+            padding: 5px;
+            box-sizing: border-box;
+            background: #f0f0f0;
+        }
+
+        #calculator-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            padding: 10px;
+        }
+
+        #calculator-content button {
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #999;
+            background: linear-gradient(to bottom, #ffffff, #e1e1e1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #iframe-container {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+
+        #iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button"></button>
+            <div id="start-menu">
+                <div id="start-menu-content">
+                    <h3>スタートメニュー</h3>
+                    <ul>
+                        <li><a href="#" onclick="openApp('browser')">Internet Explorer</a></li>
+                        <li><a href="#" onclick="openApp('calculator')">計算機</a></li>
+                        <li><a href="#" onclick="openApp('new-app')">新しいアプリ</a></li>
+                        <li><a href="#" onclick="openApp('paint')">ペイント</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="icons">
+            <div class="icon" onclick="openApp('browser')">ブラウザ</div>
+            <div class="icon" onclick="openApp('calculator')">計算機</div>
+            <div class="icon" onclick="openApp('new-app')">新しいアプリ</div>
+        </div>
+
+        <div id="browser" class="app-window">
+            <div class="title-bar">
+                <div class="title">Internet Explorer</div>
+                <div class="button-group">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div id="iframe-container">
+                <iframe src="about:blank"></iframe>
+            </div>
+            <input id="url-input" type="text" placeholder="URLを入力...">
+            <button id="go-button">移動</button>
+        </div>
+
+        <div id="calculator" class="app-window">
+            <div class="title-bar">
+                <div class="title">計算機</div>
+                <div class="button-group">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <div id="calculator-content">
+                <button onclick="press('7')">7</button>
+                <button onclick="press('8')">8</button>
+                <button onclick="press('9')">9</button>
+                <button onclick="press('/')">/</button>
+                <button onclick="press('4')">4</button>
+                <button onclick="press('5')">5</button>
+                <button onclick="press('6')">6</button>
+                <button onclick="press('*')">*</button>
+                <button onclick="press('1')">1</button>
+                <button onclick="press('2')">2</button>
+                <button onclick="press('3')">3</button>
+                <button onclick="press('-')">-</button>
+                <button onclick="press('0')">0</button>
+                <button onclick="press('.')">.</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="press('+')">+</button>
+            </div>
+            <textarea id="calc-display" readonly></textarea>
+        </div>
+
+        <div id="new-app" class="app-window">
+            <div class="title-bar">
+                <div class="title">新しいアプリ</div>
+                <div class="button-group">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">×</button>
+                </div>
+            </div>
+            <p>ここに新しいアプリの内容を追加できます。</p>
+        </div>
+    </div>
+
+    <script>
+        function openApp(appId) {
+            document.querySelectorAll('.app-window').forEach(app => app.style.display = 'none');
+            document.getElementById(appId).style.display = 'block';
+        }
+
+        document.getElementById('start-button').addEventListener('click', function() {
+            const startMenu = document.getElementById('start-menu');
+            startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.querySelectorAll('.close').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.app-window').style.display = 'none';
+            });
+        });
+
+        function press(key) {
+            document.getElementById('calc-display').value += key;
+        }
+
+        function calculate() {
+            const display = document.getElementById('calc-display');
+            try {
+                display.value = eval(display.value);
+            } catch {
+                display.value = 'エラー';
+            }
+        }
+
+        document.getElementById('go-button').addEventListener('click', function() {
+            const url = document.getElementById('url-input').value;
+            document.querySelector('#browser iframe').src = url;
+        });
+    </script>
+</body>
+</html>
